@@ -46,7 +46,7 @@ public class PortfolioViewer {
         }
     }
     public void positionSnapshot() throws PortfolioSnapshotMissingException {
-        String snapshotCSVPath = "src/main/resources/position/position.csv";
+        String snapshotCSVPath = "/app/resources/position/position.csv";
         try(Stream<String> lines = Files.lines(Paths.get(snapshotCSVPath))){
             lines.skip(1).forEach(line -> {
                 String[] lineValues = line.split(COMMA);
