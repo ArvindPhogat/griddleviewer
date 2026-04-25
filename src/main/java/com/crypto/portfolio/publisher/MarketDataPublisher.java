@@ -54,7 +54,9 @@ public class MarketDataPublisher {
     }
 
     public void publish(String stockCode, Double price) {
-        jmsTemplate.convertAndSend(stockCode, price);
+        if (stockCode != null && price != null) {
+            jmsTemplate.convertAndSend(stockCode, price);
+        }
     }
 
 }

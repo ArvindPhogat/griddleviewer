@@ -103,7 +103,9 @@ public class PortfolioViewer {
                 portfolio.setOptionsElements(optionsElement);
             }
             portfolio.setNav(calculateUpdatedNav());
-            jmsTemplate.convertAndSend("portfolio", portfolio);
+            if (portfolio != null) {
+                jmsTemplate.convertAndSend("portfolio", portfolio);
+            }
         }
     }
 
