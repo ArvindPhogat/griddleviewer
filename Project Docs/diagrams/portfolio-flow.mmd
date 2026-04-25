@@ -1,0 +1,16 @@
+flowchart TD
+    A[Spring Boot Start] --> B[Load data.sql into H2]
+    B --> C[Init SecurityDerivativesCache]
+    C --> D[Read position.csv]
+    D --> E[Build Initial Portfolio + NAV]
+    E --> F[Wait 4 seconds]
+    F --> G[MarketDataPublisher Init]
+    G --> H[Generate Stock Price Tick]
+    H --> I[Publish on stock topic]
+    I --> J[PortfolioSubscriber receives]
+    J --> K[PortfolioViewer.updateAndPublishPortfolio]
+    K --> L[Reprice Stocks + Options]
+    L --> M[Recompute NAV]
+    M --> N[Publish Portfolio on portfolio topic]
+    N --> O[ConsoleSubscriber pretty print]
+    O --> H

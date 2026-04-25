@@ -1,0 +1,13 @@
+flowchart LR
+    A[Developer Commit] --> B[Push Feature Branch]
+    B --> C[Pull Request]
+    C --> D[CI: Test + Build]
+    D --> E[Image Build]
+    E --> F[Image Scan]
+    F --> G[Push to Registry]
+    G --> H[Deploy Staging]
+    H --> I[Smoke Tests]
+    I --> J[Manual Approval]
+    J --> K[Deploy Production]
+    K --> L[Monitor + Alert]
+    L --> M[Feedback to Backlog]
