@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+
 import static com.crypto.portfolio.cache.SecurityDerivativesCache.derivativeCache;
 import static com.crypto.portfolio.calculation.CommonCalculations.calPositionValue;
 import static com.crypto.portfolio.constants.UtilityConstant.COMMA;
@@ -34,6 +36,15 @@ public class PortfolioViewer {
 
     OptionsPriceCalculator optionsPriceCalculator = new OptionsPriceCalculator();
     Set<String> underlyingInPortfolio = new HashSet<>();
+
+    @PostConstruct
+    public void initPortfolio() {
+        try {
+            positionSnapshot();
+        } catch (Exception e) {
+            // Log ya ignore kar sakte hain
+        }
+    }
     public void positionSnapshot() throws PortfolioSnapshotMissingException {
         String snapshotCSVPath = "src/main/resources/position/position.csv";
         try(Stream<String> lines = Files.lines(Paths.get(snapshotCSVPath))){
@@ -114,6 +125,38 @@ public class PortfolioViewer {
         nav = nav + portfolio.getStockElements().values().stream().map(PortfolioElement::getValue).mapToDouble(Double::doubleValue).sum();
         nav = nav + portfolio.getOptionsElements().values().stream().flatMap(Collection::stream).map(PortfolioElement::getValue).mapToDouble(Double::doubleValue).sum();
         return nav;
+    }
+
+    // Naya method: Portfolio ka output String format me (browser ke liye)
+    public String getPortfolioOutput() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("TIME                ").append(java.time.ZonedDateTime.now()).append("\n\n");
+        sb.append("    Positions           Symbol                      Price                      Quantity                    Value               \n\n");
+        if (portfolio != null && portfolio.getStockElements() != null) {
+            for (PortfolioElement pe : portfolio.getStockElements().values()) {
+                sb.append(String.format("%25s%30s%30s%30s\n",
+                        pe.getSymbol(),
+                        pe.getPrice(),
+                        pe.getQuantity(),
+                        pe.getValue()
+                ));
+            }
+        }
+        if (portfolio != null && portfolio.getOptionsElements() != null) {
+            for (java.util.List<PortfolioElement> list : portfolio.getOptionsElements().values()) {
+                for (PortfolioElement pe : list) {
+                    sb.append(String.format("%25s%30s%30s%30s\n",
+                            pe.getSymbol(),
+                            pe.getPrice(),
+                            pe.getQuantity(),
+                            pe.getValue()
+                    ));
+                }
+            }
+        }
+        sb.append("\n    Net Asset Value     ").append(portfolio != null ? portfolio.getNav() : "NaN").append("\n");
+        sb.append("_________________________________________________________________________________________________________________________________________________\n");
+        return sb.toString();
     }
 
 }
